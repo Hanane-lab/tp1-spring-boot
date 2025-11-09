@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Tags | Tableau de Bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --info-color: #4895ef;
+            --warning-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            border-radius: 6px;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .page-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(135deg, var(--success-color), #3a86ff);
+        }
+        
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #ff9e00, #ff6b00);
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-color: #f1f3f4;
+        }
+        
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #3a86ff);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9e00, #ff6b00);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #e1e5eb;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+            text-align: center;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0;
+        }
+        
+        .stats-label {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #4cc9f0, #3a86ff);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin: 0.25rem;
+        }
+        
+        .tag-badge i {
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .tag-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--success-color);
+            transition: all 0.3s ease;
+        }
+        
+        .tag-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .tag-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4cc9f0, #3a86ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+        }
+        
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            border-radius: 0 0 12px 12px;
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .tags-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tag-card {
+                text-align: center;
+            }
+            
+            .tag-icon {
+                margin: 0 auto 1rem auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-boxes me-2"></i> GestionStock Pro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-home me-1"></i> Accueil
+                    </a>
+                    <a class="nav-link" href="/categories">
+                        <i class="fas fa-tags me-1"></i> Catégories
+                    </a>
+                    <a class="nav-link" href="/produits">
+                        <i class="fas fa-box me-1"></i> Produits
+                    </a>
+                    <a class="nav-link" href="/fournisseurs">
+                        <i class="fas fa-truck me-1"></i> Fournisseurs
+                    </a>
+                    <a class="nav-link active" href="/tags">
+                        <i class="fas fa-tag me-1"></i> Tags
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+      
+        <div class="page-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li class="breadcrumb-item active">Tags</li>
+                </ol>
+            </nav>
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title"><i class="fas fa-tags me-2"></i> Gestion des Tags</h1>
+                    <p class="page-subtitle">Organisez et gérez vos tags pour une meilleure classification des produits</p>
+                </div>
+                
+            </div>
+        </div>
+
+     
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="fas fa-check-circle me-2 fs-5"></i>
+            <div>
+                <span th:text="${success}"></span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Créer un Nouveau Tag</h5>
+                <span class="badge bg-light text-success">Formulaire</span>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/tags}" th:object="${tag}" method="post">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Libellé du Tag</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" th:field="*{libelle}" class="form-control" placeholder="Saisissez le libellé du tag" required>
+                            </div>
+                            <div class="form-text">Le libellé doit être unique et descriptif.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-plus me-2"></i> Créer le Tag
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card d-none d-lg-block">
+            <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-th me-2"></i> Tags Disponibles</h5>
+                <span class="badge bg-light text-primary fs-6" th:text="${tagsCount} + ' tag(s)'">0 tag(s)</span>
+            </div>
+            <div class="card-body">
+                <div class="tags-grid">
+                    <div th:each="tag : ${tags}" class="tag-card">
+                        <div class="d-flex align-items-center">
+                            <div class="tag-icon">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-semibold" th:text="${tag.libelle}"></h6>
+                                <small class="text-muted">ID: <span th:text="${tag.id}"></span></small>
+                            </div>
+                            <div class="action-buttons">
+                                <button type="button" class="btn btn-warning btn-sm edit-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editModal"
+                                        th:data-id="${tag.id}"
+                                        th:data-libelle="${tag.libelle}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a th:href="@{/tags/delete/{id}(id=${tag.id})}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer le tag \'' + [[${tag.libelle}]] + '\' ?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${tags.empty}" class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <h4 class="text-muted">Aucun tag trouvé</h4>
+                            <p class="text-muted">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card d-lg-none">
+            <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i> Liste des Tags</h5>
+                <span class="badge bg-light text-primary fs-6" th:text="${tagsCount} + ' tag(s)'">0 tag(s)</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th width="15%">ID</th>
+                                <th width="50%">Libellé</th>
+                                <th width="35%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="tag : ${tags}" th:class="${tagStat.odd} ? 'table-light' : ''">
+                                <td th:text="${tag.id}" class="fw-semibold"></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-tag text-primary me-2"></i>
+                                        <span th:text="${tag.libelle}" class="fw-semibold"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-warning btn-sm edit-btn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal"
+                                                th:data-id="${tag.id}"
+                                                th:data-libelle="${tag.libelle}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <a th:href="@{/tags/delete/{id}(id=${tag.id})}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer le tag \'' + [[${tag.libelle}]] + '\' ?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${tags.empty}">
+                                <td colspan="3" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-tags"></i>
+                                        <h4 class="text-muted">Aucun tag trouvé</h4>
+                                        <p class="text-muted">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour à l'accueil
+            </a>
+            <div>
+                <span class="text-muted me-2">GestionStock Pro</span>
+                <span class="badge bg-primary">v2.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editForm" method="post">
+                    <div class="modal-header bg-gradient-warning text-white">
+                        <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Modifier le Tag</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Libellé</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" name="libelle" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Sauvegarder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editForm = document.getElementById('editForm');
+            
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const libelle = this.getAttribute('data-libelle');
+                    
+                    editForm.action = '/tags/update/' + id;
+                    editForm.querySelector('input[name="libelle"]').value = libelle || '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

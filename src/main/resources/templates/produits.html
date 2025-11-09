@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Produits | Tableau de Bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --info-color: #4895ef;
+            --warning-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            border-radius: 6px;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .page-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(135deg, var(--success-color), #3a86ff);
+        }
+        
+        .bg-gradient-info {
+            background: linear-gradient(135deg, var(--info-color), #560bad);
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-color: #f1f3f4;
+        }
+        
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #3a86ff);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9e00, #ff6b00);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #e1e5eb;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+            text-align: center;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0;
+        }
+        
+        .stats-label {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .price-badge {
+            background: linear-gradient(135deg, #4cc9f0, #3a86ff);
+            color: white;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+        
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            border-radius: 0 0 12px 12px;
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-boxes me-2"></i> GestionStock Pro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-home me-1"></i> Accueil
+                    </a>
+                    <a class="nav-link" href="/categories">
+                        <i class="fas fa-tags me-1"></i> Catégories
+                    </a>
+                    <a class="nav-link active" href="/produits">
+                        <i class="fas fa-box me-1"></i> Produits
+                    </a>
+                    <a class="nav-link" href="/fournisseurs">
+                        <i class="fas fa-truck me-1"></i> Fournisseurs
+                    </a>
+                    <a class="nav-link" href="/tags">
+                        <i class="fas fa-tag me-1"></i> Tags
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="page-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li class="breadcrumb-item active">Produits</li>
+                </ol>
+            </nav>
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title"><i class="fas fa-box me-2"></i> Gestion des Produits</h1>
+                    <p class="page-subtitle">Gérez votre inventaire de produits, ajoutez de nouveaux articles et modifiez les existants</p>
+                </div>
+                
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="fas fa-check-circle me-2 fs-5"></i>
+            <div>
+                <span th:text="${success}"></span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Ajouter un Nouveau Produit</h5>
+                <span class="badge bg-light text-success">Formulaire</span>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/produits}" th:object="${produit}" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Nom du Produit</label>
+                            <input type="text" th:field="*{nom}" class="form-control" placeholder="Saisissez le nom du produit" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Prix</label>
+                            <div class="input-group">
+                                <span class="input-group-text">dh</span>
+                                <input type="number" th:field="*{prix}" class="form-control" step="0.01" placeholder="0.00" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Code Barre</label>
+                            <input type="text" th:field="*{code_barre}" class="form-control" placeholder="Code barre (optionnel)">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Description du produit (optionnelle)"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Catégorie</label>
+                            <select th:field="*{categorie}" class="form-select">
+                                <option value="">Sélectionner une catégorie</option>
+                                <option th:each="cat : ${categories}" 
+                                        th:value="${cat.id}" 
+                                        th:text="${cat.nom}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Fournisseur</label>
+                            <select th:field="*{fornisseur}" class="form-select">
+                                <option value="">Sélectionner un fournisseur</option>
+                                <option th:each="four : ${fournisseurs}" 
+                                        th:value="${four.id}" 
+                                        th:text="${four.nom}"></option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fas fa-save me-2"></i> Ajouter le Produit
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-2"></i> Réinitialiser
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i> Inventaire des Produits</h5>
+                <span class="badge bg-light text-primary fs-6" th:text="${produitsCount} + ' produit(s)'">0 produit(s)</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th width="5%">ID</th>
+                                <th width="20%">Produit</th>
+                                <th width="10%">Prix</th>
+                                <th width="25%">Description</th>
+                                <th width="15%">Catégorie</th>
+                                <th width="15%">Fournisseur</th>
+                                <th width="10%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="produit : ${produits}" th:class="${produitStat.odd} ? 'table-light' : ''">
+                                <td th:text="${produit.id}" class="fw-semibold"></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-image me-3">
+                                            <i class="fas fa-box"></i>
+                                        </div>
+                                        <div>
+                                            <div th:text="${produit.nom}" class="fw-semibold"></div>
+                                            <small class="text-muted" th:if="${produit.code_barre}" th:text="${produit.code_barre}"></small>
+                                            <small class="text-muted" th:unless="${produit.code_barre}">Sans code barre</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="price-badge" th:text="'dh' + ${#numbers.formatDecimal(produit.prix, 1, 2)}"></span>
+                                </td>
+                                <td>
+                                    <span th:if="${produit.description}" th:text="${produit.description}"></span>
+                                    <span th:unless="${produit.description}" class="text-muted fst-italic">Aucune description</span>
+                                </td>
+                                <td>
+                                    <span th:if="${produit.categorie}" th:text="${produit.categorie.nom}" class="badge bg-light text-dark"></span>
+                                    <span th:unless="${produit.categorie}" class="text-muted fst-italic">Non catégorisé</span>
+                                </td>
+                                <td>
+                                    <span th:if="${produit.fornisseur}" th:text="${produit.fornisseur.nom}" class="badge bg-light text-dark"></span>
+                                    <span th:unless="${produit.fornisseur}" class="text-muted fst-italic">Aucun fournisseur</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-info btn-sm details-btn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#detailsModal"
+                                                th:data-id="${produit.id}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-warning btn-sm edit-btn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal"
+                                                th:data-id="${produit.id}"
+                                                th:data-nom="${produit.nom}"
+                                                th:data-prix="${produit.prix}"
+                                                th:data-description="${produit.description}"
+                                                th:data-categorie="${produit.categorie?.id}"
+                                                th:data-fornisseur="${produit.fornisseur?.id}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        
+                                        <a th:href="@{/produits/delete/{id}(id=${produit.id})}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer le produit \'' + [[${produit.nom}]] + '\' ?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${produits.empty}">
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-box-open"></i>
+                                        <h4 class="text-muted">Aucun produit trouvé</h4>
+                                        <p class="text-muted">Commencez par ajouter votre premier produit en utilisant le formulaire ci-dessus.</p>
+                                        <a href="#" class="btn btn-primary mt-2">
+                                            <i class="fas fa-plus me-1"></i> Ajouter un Produit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour à l'accueil
+            </a>
+            <div>
+                <span class="text-muted me-2">GestionStock Pro</span>
+                <span class="badge bg-primary">v2.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="detailsModalLabel">
+                        <i class="fas fa-info-circle me-2"></i> Détails du Produit
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detailsContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2">Chargement des détails...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="editForm" method="post">
+                    <div class="modal-header bg-gradient-warning text-white">
+                        <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Modifier le Produit</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nom du Produit</label>
+                                <input type="text" name="nom" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Prix</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">dh</span>
+                                    <input type="number" name="prix" class="form-control" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Description</label>
+                                <textarea name="description" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Catégorie</label>
+                                <select name="categorie" class="form-select">
+                                    <option value="">Sélectionner une catégorie</option>
+                                    <option th:each="cat : ${categories}" 
+                                            th:value="${cat.id}" 
+                                            th:text="${cat.nom}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Fournisseur</label>
+                                <select name="fornisseur" class="form-select">
+                                    <option value="">Sélectionner un fournisseur</option>
+                                    <option th:each="four : ${fournisseurs}" 
+                                            th:value="${four.id}" 
+                                            th:text="${four.nom}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Sauvegarder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de l'édition
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editForm = document.getElementById('editForm');
+            
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const nom = this.getAttribute('data-nom');
+                    const prix = this.getAttribute('data-prix');
+                    const description = this.getAttribute('data-description');
+                    const categorieId = this.getAttribute('data-categorie');
+                    const fournisseurId = this.getAttribute('data-fornisseur');
+                    
+                    editForm.action = '/produits/update/' + id;
+                    editForm.querySelector('input[name="nom"]').value = nom || '';
+                    editForm.querySelector('input[name="prix"]').value = prix || '';
+                    editForm.querySelector('textarea[name="description"]').value = description || '';
+                    editForm.querySelector('select[name="categorie"]').value = categorieId || '';
+                    editForm.querySelector('select[name="fornisseur"]').value = fournisseurId || '';
+                });
+            });
+
+            // Gestion des détails
+            const detailsButtons = document.querySelectorAll('.details-btn');
+            const detailsModal = document.getElementById('detailsModal');
+            const detailsContent = document.getElementById('detailsContent');
+            
+            detailsButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    
+                    // Afficher le spinner de chargement
+                    detailsContent.innerHTML = `
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <p class="mt-2">Chargement des détails...</p>
+                        </div>
+                    `;
+                    
+                    // Charger les détails via AJAX
+                    fetch('/produits/details/' + productId)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erreur ' + response.status + ': ' + response.statusText);
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            detailsContent.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                            detailsContent.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Erreur lors du chargement des détails: ${error.message}
+                                </div>
+                            `;
+                        });
+                });
+            });
+        
+            // Réinitialiser le modal quand il est fermé
+            detailsModal.addEventListener('hidden.bs.modal', function () {
+                detailsContent.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2">Chargement des détails...</p>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

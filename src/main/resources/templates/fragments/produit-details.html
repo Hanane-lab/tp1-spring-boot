@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+        
+        .detail-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #212529;
+            text-align: right;
+            flex: 1;
+        }
+        
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ff9e00, #ff6b00);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .tag-pill i {
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .badge-custom {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .section-title {
+            color: #4361ee;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .technical-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .price-highlight {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-available {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .status-expired {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        .status-unknown {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div th:fragment="detailsContent" th:if="${produit}">
+        <!-- En-tête du produit -->
+        <div class="detail-section">
+            <div class="detail-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-2 text-dark" th:text="${produit.nom}">Nom du produit</h4>
+                        <div class="d-flex flex-wrap gap-3 align-items-center">
+                            <span class="price-highlight" th:if="${produit.prix != null}" th:text="'$' + ${#numbers.formatDecimal(produit.prix, 1, 2)}"></span>
+                            <span th:if="${produit.code_barre}" class="text-muted">
+                                <i class="fas fa-barcode me-1"></i>
+                                <span th:text="${produit.code_barre}"></span>
+                            </span>
+                            <span th:if="${produit.date_expiration}" class="status-badge" 
+                                  th:classappend="${#temporals.isAfter(produit.date_expiration, #temporals.createToday())} ? 'status-available' : 'status-expired'">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                <span th:text="${#temporals.format(produit.date_expiration, 'dd/MM/yyyy')}"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="d-flex flex-column gap-2">
+                            <span th:if="${produit.categorie}" class="badge-custom">
+                                <i class="fas fa-tag me-1"></i>
+                                <span th:text="${produit.categorie.nom}"></span>
+                            </span>
+                            <span th:if="${produit.fornisseur}" class="badge bg-success">
+                                <i class="fas fa-truck me-1"></i>
+                                <span th:text="${produit.fornisseur.nom}"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Informations générales -->
+            <div class="col-lg-6">
+                <div class="detail-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-info-circle"></i> Informations Générales
+                    </h5>
+                    <div class="detail-card">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Description:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.description}" th:text="${produit.description}"></span>
+                                    <span th:unless="${produit.description}" class="text-muted fst-italic">Non renseignée</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Prix:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.prix != null}" class="fw-semibold text-success" th:text="'dh' + ${#numbers.formatDecimal(produit.prix, 1, 2)}"></span>
+                                    <span th:unless="${produit.prix != null}" class="text-muted fst-italic">Non renseigné</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Code barre:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.code_barre}" class="font-monospace" th:text="${produit.code_barre}"></span>
+                                    <span th:unless="${produit.code_barre}" class="text-muted fst-italic">Non renseigné</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Date expiration:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.date_expiration}" th:text="${#temporals.format(produit.date_expiration, 'dd/MM/yyyy')}"></span>
+                                    <span th:unless="${produit.date_expiration}" class="text-muted fst-italic">Non renseignée</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Catégorie:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.categorie}" class="badge bg-primary" th:text="${produit.categorie.nom}"></span>
+                                    <span th:unless="${produit.categorie}" class="text-muted fst-italic">Aucune</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Fournisseur:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.fornisseur}" class="badge bg-success" th:text="${produit.fornisseur.nom}"></span>
+                                    <span th:unless="${produit.fornisseur}" class="text-muted fst-italic">Aucun</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags associés -->
+            <div class="col-lg-6">
+                <div class="detail-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-tags"></i> Tags Associés
+                        <span th:if="${produit.tags != null and !produit.tags.isEmpty()}" 
+                              class="badge bg-secondary" 
+                              th:text="${produit.tags.size()}"></span>
+                    </h5>
+                    <div class="detail-card">
+                        <div th:if="${produit.tags != null and !produit.tags.isEmpty()}" class="d-flex flex-wrap gap-2">
+                            <span th:each="tag : ${produit.tags}" 
+                                  class="tag-pill">
+                                <i class="fas fa-tag"></i>
+                                <span th:text="${tag.libelle}"></span>
+                            </span>
+                        </div>
+                        <div th:unless="${produit.tags != null and !produit.tags.isEmpty()}" class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <p class="mb-0 text-muted">Aucun tag associé à ce produit</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails techniques -->
+                <div class="detail-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-microscope"></i> Détails Techniques
+                    </h5>
+                    <div th:if="${produit.detailProduit}" class="detail-card">
+                        <div class="technical-grid">
+                            <div class="info-item">
+                                <span class="info-label">Composition:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.detailProduit.composition}" th:text="${produit.detailProduit.composition}"></span>
+                                    <span th:unless="${produit.detailProduit.composition}" class="text-muted fst-italic">-</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Dosage:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.detailProduit.dosage}" th:text="${produit.detailProduit.dosage}"></span>
+                                    <span th:unless="${produit.detailProduit.dosage}" class="text-muted fst-italic">-</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Fabricant:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.detailProduit.fabricant}" th:text="${produit.detailProduit.fabricant}"></span>
+                                    <span th:unless="${produit.detailProduit.fabricant}" class="text-muted fst-italic">-</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Pays d'origine:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.detailProduit.pysOrigine}" th:text="${produit.detailProduit.pysOrigine}"></span>
+                                    <span th:unless="${produit.detailProduit.pysOrigine}" class="text-muted fst-italic">-</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Indications:</span>
+                                <span class="info-value">
+                                    <span th:if="${produit.detailProduit.indications}" th:text="${produit.detailProduit.indications}"></span>
+                                    <span th:unless="${produit.detailProduit.indications}" class="text-muted fst-italic">-</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:unless="${produit.detailProduit}" class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p class="mb-0 text-muted">Aucun détail technique renseigné</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation d'apparition des éléments
+            const elements = document.querySelectorAll('.detail-card');
+            elements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Gestion des badges d'état pour la date d'expiration
+            const expirationBadges = document.querySelectorAll('.status-badge');
+            expirationBadges.forEach(badge => {
+                if (badge.classList.contains('status-expired')) {
+                    badge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>' + badge.textContent + ' (Expiré)';
+                } else if (badge.classList.contains('status-available')) {
+                    badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>' + badge.textContent + ' (Valide)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

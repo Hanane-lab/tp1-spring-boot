@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application de Gestion | Tableau de Bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --info-color: #4895ef;
+            --warning-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .dashboard-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .card-icon {
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .card-icon {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+        
+        .quick-nav-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .btn-nav {
+            border-radius: 8px;
+            padding: 12px 20px;
+            text-align: left;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-nav:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(135deg, var(--success-color), #3a86ff);
+        }
+        
+        .bg-gradient-info {
+            background: linear-gradient(135deg, var(--info-color), #560bad);
+        }
+        
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, var(--warning-color), #b5179e);
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-text {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-boxes me-2"></i> GestionStock Pro
+            </a>
+            
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Section de bienvenue -->
+        <div class="welcome-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="welcome-title">Tableau de Bord</h2>
+                    <p class="welcome-text">Bienvenue dans votre application de gestion. Consultez les statistiques et accédez rapidement aux différentes sections.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-primary p-2"><i class="fas fa-calendar-alt me-1"></i> <span id="current-date"></span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cartes de statistiques -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-gradient-success dashboard-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="card-text mb-1">Catégories</p>
+                                <h2 class="stats-number" th:text="${categoriesCount}">0</h2>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-tags fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="/categories" class="btn btn-light btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i> Gérer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-gradient-info dashboard-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="card-text mb-1">Produits</p>
+                                <h2 class="stats-number" th:text="${produitsCount}">0</h2>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-box fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="/produits" class="btn btn-light btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i> Gérer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-gradient-warning dashboard-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="card-text mb-1">Fournisseurs</p>
+                                <h2 class="stats-number" th:text="${fournisseursCount}">0</h2>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-truck fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="/fournisseurs" class="btn btn-light btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i> Gérer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation rapide et autres sections -->
+        <div class="row">
+            <div class=" mb-4">
+                <div class="card quick-nav-card">
+                    <div class="card-header bg-white border-bottom-0 pb-0">
+                        <h5 class="section-title">Navigation Rapide</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/categories" class="btn btn-nav">
+                                <i class="fas fa-tags text-primary"></i> Gérer les Catégories
+                            </a>
+                            <a href="/produits" class="btn btn-nav">
+                                <i class="fas fa-box text-primary"></i> Gérer les Produits
+                            </a>
+                            <a href="/fournisseurs" class="btn btn-nav">
+                                <i class="fas fa-truck text-primary"></i> Gérer les Fournisseurs
+                            </a>
+                            <a href="/tags" class="btn btn-nav">
+                                <i class="fas fa-tag text-primary"></i> Gérer les Tags
+                            </a>
+                            <a href="/detail-produits" class="btn btn-nav">
+                                <i class="fas fa-info-circle text-primary"></i> Détails Produits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('fr-FR', options);
+    </script>
+</body>
+</html>
