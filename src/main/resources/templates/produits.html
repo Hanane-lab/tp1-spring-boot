@@ -344,8 +344,8 @@
             </nav>
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1 class="page-title"><i class="fas fa-box me-2"></i> Gestion des Produits</h1>
-                    <p class="page-subtitle">Gérez votre inventaire de produits, ajoutez de nouveaux articles et modifiez les existants</p>
+                    <h1 class="page-title"><i class="fas fa-box me-2" sec:authorize="hasRole('ADMIN')"></i> Gestion des Produits</h1>
+                    <p class="page-subtitle" sec:authorize="hasRole('ADMIN')">Gérez votre inventaire de produits, ajoutez de nouveaux articles et modifiez les existants</p>
                 </div>
                 
             </div>
@@ -359,7 +359,7 @@
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
 
-        <div class="card">
+        <div class="card" sec:authorize="hasRole('ADMIN')">
             <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Ajouter un Nouveau Produit</h5>
                 <span class="badge bg-light text-success">Formulaire</span>
@@ -470,14 +470,14 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button type="button" class="btn btn-info btn-sm details-btn" 
+                                        <button type="button" class="btn btn-info btn-sm details-btn" sec:authorize="hasRole('ADMIN')"
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#detailsModal"
                                                 th:data-id="${produit.id}">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         
-                                        <button type="button" class="btn btn-warning btn-sm edit-btn" 
+                                        <button type="button" class="btn btn-warning btn-sm edit-btn" sec:authorize="hasRole('ADMIN')"
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#editModal"
                                                 th:data-id="${produit.id}"
@@ -489,7 +489,7 @@
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         
-                                        <a th:href="@{/produits/delete/{id}(id=${produit.id})}" 
+                                        <a th:href="@{/produits/delete/{id}(id=${produit.id})}" sec:authorize="hasRole('ADMIN')"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer le produit \'' + [[${produit.nom}]] + '\' ?')">
                                             <i class="fas fa-trash"></i>
@@ -502,7 +502,7 @@
                                     <div class="empty-state">
                                         <i class="fas fa-box-open"></i>
                                         <h4 class="text-muted">Aucun produit trouvé</h4>
-                                        <p class="text-muted">Commencez par ajouter votre premier produit en utilisant le formulaire ci-dessus.</p>
+                                        <p class="text-muted" sec:authorize="hasRole('ADMIN')">Commencez par ajouter votre premier produit en utilisant le formulaire ci-dessus.</p>
                                         <a href="#" class="btn btn-primary mt-2">
                                             <i class="fas fa-plus me-1"></i> Ajouter un Produit
                                         </a>
@@ -555,8 +555,8 @@
             <div class="modal-content">
                 <form id="editForm" method="post">
                     <div class="modal-header bg-gradient-warning text-white">
-                        <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Modifier le Produit</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h5 class="modal-title"><i class="fas fa-edit me-2" sec:authorize="hasRole('ADMIN')"></i> Modifier le Produit</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" sec:authorize="hasRole('ADMIN')"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
@@ -595,9 +595,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer" >
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">
                             <i class="fas fa-save me-1"></i> Sauvegarder
                         </button>
                     </div>

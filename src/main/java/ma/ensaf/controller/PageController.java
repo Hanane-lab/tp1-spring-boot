@@ -164,8 +164,7 @@ public class PageController {
     @GetMapping("/produits/details/{id}")
     public String produitDetails(@PathVariable Long id, Model model) {
         try {
-            Produit produit = produitRepository.findWithDetailsById(id)
-                .orElseThrow(() -> new RuntimeException("Produit non trouvé avec l'ID: " + id));
+            Produit produit = produitRepository.findById(id).get();
             
             model.addAttribute("produit", produit);
             return "fragments/produit-details :: detailsContent";

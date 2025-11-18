@@ -384,8 +384,8 @@
             </nav>
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1 class="page-title"><i class="fas fa-tags me-2"></i> Gestion des Tags</h1>
-                    <p class="page-subtitle">Organisez et gérez vos tags pour une meilleure classification des produits</p>
+                    <h1 class="page-title" sec:authorize="hasRole('ADMIN')"><i class="fas fa-tags me-2"></i> Gestion des Tags</h1>
+                    <p class="page-subtitle" sec:authorize="hasRole('ADMIN')">Organisez et gérez vos tags pour une meilleure classification des produits</p>
                 </div>
                 
             </div>
@@ -400,7 +400,7 @@
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
 
-        <div class="card">
+        <div class="card" sec:authorize="hasRole('ADMIN')">
             <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Créer un Nouveau Tag</h5>
                 <span class="badge bg-light text-success">Formulaire</span>
@@ -442,7 +442,7 @@
                                 <h6 class="mb-1 fw-semibold" th:text="${tag.libelle}"></h6>
                                 <small class="text-muted">ID: <span th:text="${tag.id}"></span></small>
                             </div>
-                            <div class="action-buttons">
+                            <div class="action-buttons" sec:authorize="hasRole('ADMIN')">
                                 <button type="button" class="btn btn-warning btn-sm edit-btn" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#editModal"
@@ -462,7 +462,7 @@
                         <div class="empty-state">
                             <i class="fas fa-tags"></i>
                             <h4 class="text-muted">Aucun tag trouvé</h4>
-                            <p class="text-muted">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
+                            <p class="text-muted" sec:authorize="hasRole('ADMIN')">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
                         </div>
                     </div>
                 </div>
@@ -494,7 +494,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="action-buttons">
+                                    <div class="action-buttons "  sec:authorize="hasRole('ADMIN')">
                                         <button type="button" class="btn btn-warning btn-sm edit-btn" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#editModal"
@@ -515,7 +515,7 @@
                                     <div class="empty-state">
                                         <i class="fas fa-tags"></i>
                                         <h4 class="text-muted">Aucun tag trouvé</h4>
-                                        <p class="text-muted">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
+                                        <p class="text-muted" sec:authorize="hasRole('ADMIN')">Commencez par créer votre premier tag en utilisant le formulaire ci-dessus.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -536,7 +536,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal fade" id="editModal" tabindex="-1" sec:authorize="hasRole('ADMIN')">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="editForm" method="post">
